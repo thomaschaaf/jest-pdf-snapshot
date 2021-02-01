@@ -1,21 +1,36 @@
 const fs = require('fs');
 const path = require('path');
-const shell = require('shelljs');
 const tmp = require('tmp');
+const ComparePdf = require('compare-pdf');
 
 const DIFF_OUTPUT_DIR = '__diff_output__';
 
-shell.config.silent = true;
 
-function defaultIsSamePdf(source, target) {
-  return shell.exec(`diff-pdf ${source} ${target}`).code === 0;
+async function defaultIsSamePdf(source, target) {
+  const comparisonResult = await new ComparePdf({
+    paths: {
+      actualPdfRootFolder: process.cwd() + '/data/actualPdfs',
+      baselinePdfRootFolder: process.cwd() + '/data/baselinePdfs',
+      actualPngRootFolder: process.cwd() + '/data/actualPngs',
+      baselinePngRootFolder: process.cwd() + '/data/baselinePngs',
+      diffPngRootFolder: process.cwd() + '/data/diffPngs',
+    },
+    settings: {
+      imageEngine: 'native',
+    },
+  })
+    .actualPdfFile(source)
+    .baselinePdfFile(target)
+    .compare();
+
+  return comparisonResult.status === 'passed';
 }
 
-function defaultGenerateDiff(source, target, diffOutput) {
-  return shell.exec(`diff-pdf --output-diff=${diffOutput} ${source} ${target}`);
+async function defaultGenerateDiff(source, target, diffOutput) {
+  return fs.writeFileSync(diffOutput, fs.readFileSync(source));
 }
 
-function diffPdfToSnapshot({
+async function diffPdfToSnapshot({
   pdfBuffer,
   snapshotDir,
   snapshotIdentifier,
@@ -25,13 +40,6 @@ function diffPdfToSnapshot({
   isSamePdf = defaultIsSamePdf,
   generateDiff = defaultGenerateDiff,
 } = {}) {
-  if (shell.exec('diff-pdf -h').code !== 0) {
-    return {
-      pass: false,
-      failureType: 'DiffPdfNotFound',
-    };
-  }
-
   const snapshotPath = path.join(snapshotDir, `${snapshotIdentifier}.pdf`);
 
   if (updateSnapshot) {
@@ -66,7 +74,7 @@ function diffPdfToSnapshot({
   const tmpFile = tmp.fileSync();
   fs.writeSync(tmpFile.fd, pdfBuffer);
 
-  if (!isSamePdf(tmpFile.name, snapshotPath)) {
+  if (!await isSamePdf(tmpFile.name, snapshotPath)) {
     const diffOutputDir = path.join(snapshotDir, DIFF_OUTPUT_DIR);
 
     if (!fs.existsSync(diffOutputDir)) {
@@ -75,7 +83,7 @@ function diffPdfToSnapshot({
 
     const diffOutputPath = path.join(diffOutputDir, `${snapshotIdentifier}-diff.pdf`);
 
-    generateDiff(tmpFile.name, snapshotPath, diffOutputPath);
+    await generateDiff(tmpFile.name, snapshotPath, diffOutputPath);
 
     tmpFile.removeCallback();
 

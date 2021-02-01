@@ -1,6 +1,6 @@
 {
-  "name": "jest-pdf-snapshot",
-  "version": "0.5.4",
+  "name": "jest-pdf-snapshot-thomaschaaf",
+  "version": "0.6.0",
   "description": "Jest matcher for pdf comparison",
   "main": "src/index.js",
   "repository": "https://github.com/zeptometer/jest-pdf-snapshot.git",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
+    "compare-pdf": "^1.1.4",
     "lodash": "^4.17.15",
     "shelljs": "^0.8.4",
     "tmp": "^0.2.1"

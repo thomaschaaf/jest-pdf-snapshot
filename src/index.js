@@ -27,7 +27,7 @@ function createSnapshotIdentifier({
 }
 
 // eslint-disable-next-line no-unused-vars
-function toMatchPdfSnapshot(received) {
+async function toMatchPdfSnapshot(received) {
   const {
     testPath, currentTestName, snapshotState, isNot,
   } = this;
@@ -55,7 +55,7 @@ function toMatchPdfSnapshot(received) {
   // eslint-disable-next-line no-underscore-dangle
   const addSnapshot = ['all', 'new'].includes(snapshotState._updateSnapshot);
 
-  const result = diffPdfToSnapshot({
+  const result = await diffPdfToSnapshot({
     pdfBuffer: received,
     snapshotDir,
     snapshotIdentifier,
@@ -94,7 +94,7 @@ function toMatchPdfSnapshot(received) {
         break;
 
       default:
-        throw new Error('Got unexpected failure type');
+        throw new Error('Got unexpected failure type'+ result.failureType);
     }
 
     return { pass, message };
