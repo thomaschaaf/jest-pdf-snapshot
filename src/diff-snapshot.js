@@ -9,11 +9,11 @@ const DIFF_OUTPUT_DIR = '__diff_output__';
 async function defaultIsSamePdf(source, target) {
   const comparisonResult = await new ComparePdf({
     paths: {
-      actualPdfRootFolder: process.cwd() + '/data/actualPdfs',
-      baselinePdfRootFolder: process.cwd() + '/data/baselinePdfs',
-      actualPngRootFolder: process.cwd() + '/data/actualPngs',
-      baselinePngRootFolder: process.cwd() + '/data/baselinePngs',
-      diffPngRootFolder: process.cwd() + '/data/diffPngs',
+      actualPdfRootFolder: process.cwd() + '/.compare-pdf/actualPdfs',
+      baselinePdfRootFolder: process.cwd() + '/.compare-pdf/baselinePdfs',
+      actualPngRootFolder: process.cwd() + '/.compare-pdf/actualPngs',
+      baselinePngRootFolder: process.cwd() + '/.compare-pdf/baselinePngs',
+      diffPngRootFolder: process.cwd() + '/.compare-pdf/diffPngs',
     },
     settings: {
       imageEngine: 'native',
