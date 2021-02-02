@@ -16,6 +16,7 @@ async function defaultIsSamePdf(source, target) {
       diffPngRootFolder: process.cwd() + '/.compare-pdf/diffPngs',
     },
     settings: {
+      threshold: 0.1,
       imageEngine: 'native',
     },
   })
